@@ -1,0 +1,34 @@
+version: "2"
+services:
+  ruvi:
+    container_name: ruvi
+    image: nicebot14/ruvi:v2
+    environment:
+      - "VIRTUAL_HOST=ruvi.tv"
+      - "WEBROOT=/var/www/html/public"
+    links:
+      - mysql
+    volumes:
+     - ../:/var/www/html
+    depends_on:
+     - nginx_proxy
+     - mysql
+  mysql:
+    container_name: mysql
+    image: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=gELJZcf4fb4eqYnaS3U8
+      - MYSQL_USER=ruvi
+      - MYSQL_PASSWORD=ruvidb
+      - MYSQL_DATABASE=ruvitv
+  nginx_proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"

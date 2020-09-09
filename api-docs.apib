@@ -1,0 +1,277 @@
+FORMAT: 1A
+HOST: http://polls.apiblueprint.org/
+
+# ruvi
+
+Rest Api документация
+
+# Group Пользователь
+
+## Пользователь [/api/user/{id}]
+
++ Parameters
+    + id (number) - id user
+    
++ Attributes
+    + id: 1 (number)
+    + name: Dummy (string)
+    + photo: http://lorempixel.com/400/200/ (string)
+
+### Информация [GET]
++ Response 200 (application/json)
+    + Attributes (Пользователь)
+ 
+
+   
+### Обновление данных [PUT]
+
+    + Headers
+        access_token: qwerty
+        
++ Request (application/json)
+    + Attributes (Пользователь)
+        
++ Response 200 (application/json)
+    + Attributes (Пользователь)
+
+## Регистрация [/api/user]
+
+### Новый пользователь [POST]
++ Request (application/json)
+    + Attributes (Пользователь)
+        + password: qwerty123 (string)
+
++ Response 200 (application/json)
+    + Attributes (Пользователь)
+    
+
+## Данные пользователя [/api/user/info]
+
+### Данные текущего пользователя [GET]
+
++ Request
+
+    + Headers
+    
+            access_token: qwerty
+
++ Response 200 (application/json)
+    + Attributes (Пользователь)
+        + role: '-' (Роль)
+
+
+    
+## Авторизация через соц. сети [/api/auth/{type}{?redirect}]
+
+### Переход на страницу авторизации [GET]
+
++ Parameters
+    + type: vk, google, facebook (enum)
+    + redirect: http://example.com (string)
+    
++ Response 302
+
+    + Headers
+        
+            Location: /questions/1
+    
+
+### Получение токена [POST]
++ Parameters
+    + type: token (string)
++ Request (application/json)
+    + Attributes
+        + email: test@test.com (string)
+        + password: qwerty123 (string)
+ 
++ Response 200 (application/json)
+    + Attributes (object)
+        + token: qweqweqwe (string)
+
+## Роль [/api/role/{id}]
++ Attributes
+    + name: admin, moderator, user (enum)
+    + access (object)
+        + block_user: true (boolean)
+        + delete_comment: true
+
+    
+# Group Комментарии
+## Комментарий [/api/post/{id}/comments]
+
++ Parameters
+    + id (number) - id Поста
+
++ Attributes (object)
+    + id: 1 (number)
+    + created: 1415203908 (number) - Time stamp
+    + text: "lorem ipsum" (string)
+    + user (Пользователь)
+
+
+### Список [GET]
+Получение списка комментариев для конкретного поста
+
++ Response 200 (application/json)
+    + Attributes (array[Комментарий])
+    
+## Пожаловаться на комментарий [/api/comments/{id}]
+### Пожаловаться [POST]
++ Parameters
+    + id: 1 (number) id комментария
++ Request (application/json)
+    + Parameters
+        + block: true (boolean)
+    + Headers
+    
+            access_token: qwerty
+            
++ Response 200 (application/json)
+    + Attributes
+        + success: true (boolean)
+
+
+
+# Group Рубрики
+описание рубрики
+
+## Рубрика [/api/categories/{id}]
++ Attributes
+    + id: 1 (number)
+    + name: Dummy (string)
+    + alias: alias (string)
+    + photo: http://lorempixel.com/400/200/ (string)
+    + comments_enabled: true (boolean)
+    + comments_links: true (boolean)
+    + comments_guest: true (boolean)
+    + comments_length: true (boolean)
+    + active: true (boolean)
+    + created_at: 1469611150 (number)
+
+### Информация [GET]
++ Parameters
+    + id: 1 (number, required) - Category id
+    
++ Response 200 (application/json)
+    + Attributes (Рубрика)
+    
+## Получение списка рубрик [/api/categories/{?limit,page}]
+
+### Список [GET]
++ Parameters
+    + limit: 100 (number, optional) - Лимит рубрик
+    + page: 1 (Category, optional) - смещение
++ Response 200 (application/json)
+    + Attributes
+        + total: 725 (number)
+        + per_page: 50 (number)
+        + current_page: 1 (number)
+        + last_page: 15 (number)
+        + next_page_url: /url/to/next/url (string)
+        + prev_page_url: /url/to/prev/url (string)
+        + from: 1 (number)
+        + to: 50 (number)
+        + data: (array[Рубрика])
+
+
+
+        
+# Group Посты
+информация о постах
+
+## Пост [/api/posts/{id}]
++ Attributes
+    + id: 1 (number)
+    + text: lorem ipsum (string)
+    + likes: 10 (number)
+    + images: lorempixel.com/200/200/ (array[string])
+    + videos: http://youto.be/url (array[string])
+
+### Конкретный пост [GET]
++ Parameters
+    + id: 1 (number)
++ Response 200 (application/json)
+    + Attributes (Пост)
++ Response 404 (application/json)
+    + Attributes
+        + error: post not found
+    
+
+
+## Список постов [/api/posts{?limit,page,category,type}]    
+
+### Список [GET]
++ Parameters
+    + limit: 100 (number, optional) - Лимит рубрик
+    + page: 1 (Category, optional) - смещение
++ Response 200 (application/json)
+    + Attributes
+        + total: 725 (number)
+        + per_page: 50 (number)
+        + current_page: 1 (number)
+        + last_page: 15 (number)
+        + next_page_url: /url/to/next/url (string)
+        + prev_page_url: /url/to/prev/url (string)
+        + from: 1 (number)
+        + to: 50 (number)
+        + data: (array[Пост])
+        
+        
++ Response 404 (application/json)
+    + Attributes
+        + error: post not found
+        
+
+        
+        
+# Group Лайки
+Лайки к постам
+
+## Управление лайками [/api/post/{postId}/like]
++ Request
+    + Headers
+        access_token: qwerty
+
+### Поставить лайк [POST]
+
++ Parameters
+    + postId: 11 - id поста
+
++ Response 200 (application/json)
+    + Attributes
+        + success: true (boolean)
+        
++ Response 404 (application/json)
+    + Attributes
+        + success: false (boolean)
+        + error: error description (string)
+        
+
+### Удалить лайк [DELETE]
++ Parameters
+    + postId: 11 - id поста
++ Response 200 (application/json)
+    + Attributes
+        + success: true (boolean)
+        
++ Response 404 (application/json)
+    + Attributes
+        + success: false (boolean)
+        + error: error description (string)
+        
+# Group Модерация
+
+## Блокировка пользователя [/api/user/{id}/block]
++ Parameters
+    + id: 1 (number) user id
+    
+### Заблокировать [POST]
++ Request (application/json)
+    + Parameters
+        + block: true (boolean)
+    + Headers
+    
+            access_token: qwerty
++ Response 200 (application/json)
+    + Attributes
+        + success: true (boolean)
